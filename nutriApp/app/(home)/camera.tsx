@@ -1,36 +1,55 @@
 import React, { useState, useEffect } from "react";
 import { Text, View, StyleSheet, Button } from "react-native";
-import { useCameraPermissions, CameraView, Camera, BarcodeScanningResult } from "expo-camera";
+import {
+  useCameraPermissions,
+  CameraView,
+  BarcodeScanningResult,
+} from "expo-camera";
+import { useRouter } from 'expo-router';
 
 export default function App() {
-  const [hasPermission, setHasPermission] = useState(null);
   const [scanned, setScanned] = useState(false);
   const [permission, requestPermission] = useCameraPermissions();
 
   useEffect(() => {
-    if (permission && !permission.granted && permission.canAskAgain) {
+    if (!permission?.granted && permission?.canAskAgain) {
       requestPermission();
     }
   }, [permission]);
 
-  const handleBarcodeScanned = ({ type, data }: BarcodeScanningResult) => {
-    setScanned(true);
-    alert(`Bar code with type ${type} and data ${data} has been scanned!`);
-  };
-
-  if (hasPermission === null) {
-    return <Text>Requesting for camera permission</Text>;
+  if (!permission) {
+    return <Text>Requesting camera permission...</Text>;
   }
-  if (hasPermission === false) {
+
+  if (!permission.granted) {
     return <Text>No access to camera</Text>;
   }
+
+  const handleBarcodeScanned = ({ type, data }: BarcodeScanningResult) => {
+    setScanned(true);
+    console.log(`Scanned barcode type: ${type}, data: ${data}`);
+    alert(`Bar code with type ${type} and data ${data} has been scanned!`);
+  };
 
   return (
     <View style={styles.container}>
       <CameraView
         onBarcodeScanned={scanned ? undefined : handleBarcodeScanned}
         barcodeScannerSettings={{
-          barcodeTypes: ["qr", "pdf417"],
+          barcodeTypes: [
+            "qr",
+            "ean13",
+            "ean8",
+            "upc_a",
+            "upc_e",
+            "code128",
+            "code39",
+            "code93",
+            "itf14",
+            "pdf417",
+            "aztec",
+            "datamatrix",
+          ],
         }}
         style={StyleSheet.absoluteFillObject}
       />

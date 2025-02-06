@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, Alert, FlatList, TouchableOpacity } from 'react-native';
+import { View, Text, TextInput, Button, Alert, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
 import { useMeal } from '../context/MealContext';
 import { Picker } from '@react-native-picker/picker';
 import { useRouter } from 'expo-router';
 import { v4 as uuidv4 } from 'uuid';
-
+import DateTimePicker from "@react-native-community/datetimepicker";
 const EDAMAM_APP_ID = '176ba379';
 const EDAMAM_APP_KEY = '23446993d5ad17d69b640410997c86c3';
 
@@ -13,11 +13,12 @@ export default function AddMealScreen() {
   const router = useRouter();
 
   const [name, setName] = useState<'Petit-déjeuner' | 'Déjeuner' | 'Goûter' | 'Souper' | 'Collation'>('Petit-déjeuner');
-  const [date, setDate] = useState(new Date().toISOString().slice(0, 10)); // YYYY-MM-DD
-  const [time, setTime] = useState(new Date().toISOString().slice(11, 16)); // HH:MM
+  const [date, setDate] = useState(new Date().toISOString().slice(0, 10)); 
+  const [time, setTime] = useState(new Date().toISOString().slice(11, 16)); 
   const [searchQuery, setSearchQuery] = useState('');
   const [foodResults, setFoodResults] = useState<string[]>([]);
   const [selectedFoods, setSelectedFoods] = useState<string[]>([]);
+  const [showDatePicker, setShowDatePicker] = useState(false);
 
   const searchFood = async () => {
     if (!searchQuery) return;
@@ -58,10 +59,24 @@ export default function AddMealScreen() {
     router.replace('/');
   };
 
+  const onDateChange = (event: any, selectedDate?: Date) => {
+    const currentDate = selectedDate || new Date();
+    setDate(currentDate.toISOString().slice(0, 10));
+    setShowDatePicker(false);
+  };
+
+
+
   return (
-    <View>
-      <Text>Nom du repas</Text>
-      <Picker selectedValue={name} onValueChange={(itemValue) => setName(itemValue)}>
+    <View style={styles.container}>
+      <Text style={styles.title}>Ajouter un repas</Text>
+
+      <Text style={styles.label}>Nom du repas</Text>
+      <Picker
+        selectedValue={name}
+        onValueChange={(itemValue) => setName(itemValue)}
+        style={styles.picker}
+      >
         <Picker.Item label="Petit-déjeuner" value="Petit-déjeuner" />
         <Picker.Item label="Déjeuner" value="Déjeuner" />
         <Picker.Item label="Goûter" value="Goûter" />
@@ -69,32 +84,131 @@ export default function AddMealScreen() {
         <Picker.Item label="Collation" value="Collation" />
       </Picker>
 
-      <Text>Date</Text>
-      <TextInput value={date} onChangeText={setDate} placeholder="YYYY-MM-DD" />
-
-      <Text>Heure</Text>
-      <TextInput value={time} onChangeText={setTime} placeholder="HH:MM" />
-
-      <Text>Rechercher un aliment</Text>
-      <TextInput value={searchQuery} onChangeText={setSearchQuery} placeholder="Ex: Pomme, Poulet, Riz" />
-      <Button title="Rechercher" onPress={searchFood} />
-
-      <FlatList
-        data={foodResults}
-        keyExtractor={(item) => item}
-        renderItem={({ item }) => (
-          <TouchableOpacity onPress={() => addFood(item)}>
-            <Text>{item}</Text>
-          </TouchableOpacity>
-        )}
+      <Text style={styles.label}>Date</Text>
+      <TextInput
+        value={date}
+        onChangeText={setDate}
+        placeholder="YYYY-MM-DD"
+        style={styles.input}
       />
 
-      <Text>Aliments sélectionnés :</Text>
+      <Text style={styles.label}>Heure</Text>
+      <TextInput
+        value={time}
+        onChangeText={setTime}
+        placeholder="HH:MM"
+        style={styles.input}
+      />
+
+      <Text style={styles.label}>Rechercher un aliment</Text>
+      <TextInput
+        value={searchQuery}
+        onChangeText={setSearchQuery}
+        placeholder="Ex: Pomme, Poulet, Riz"
+        style={styles.input}
+      />
+      <Button title="Rechercher" onPress={searchFood} color="#6200ea" />
+
+      {foodResults.length > 0 && (
+        <FlatList
+          data={foodResults}
+          keyExtractor={(item) => item}
+          renderItem={({ item }) => (
+            <TouchableOpacity style={styles.foodItem} onPress={() => addFood(item)}>
+              <Text style={styles.foodText}>{item}</Text>
+            </TouchableOpacity>
+          )}
+        />
+      )}
+
+      <TouchableOpacity
+                style={styles.scanButton}
+                onPress={() => router.push("/camera")}
+              >
+                <Text style={styles.scanButtonText}>Scanner un code-barre</Text>
+              </TouchableOpacity>
+
+      <Text style={styles.label}>Aliments sélectionnés :</Text>
       {selectedFoods.map((food, index) => (
-        <Text key={index}>{food}</Text>
+        <Text key={index} style={styles.selectedFood}>{food}</Text>
       ))}
 
-      <Button title="Ajouter" onPress={handleAddMeal} />
+      <TouchableOpacity style={styles.addButton} onPress={handleAddMeal}>
+        <Text style={styles.addButtonText}>Ajouter le repas</Text>
+      </TouchableOpacity>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 20,
+    backgroundColor: '#f7f7f7',
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 20,
+    color: '#333',
+    textAlign: 'center',
+  },
+  label: {
+    fontSize: 16,
+    marginBottom: 8,
+    color: '#555',
+  },
+  input: {
+    height: 40,
+    borderColor: '#ccc',
+    borderWidth: 1,
+    borderRadius: 8,
+    paddingLeft: 10,
+    marginBottom: 20,
+    backgroundColor: '#fff',
+  },
+  picker: {
+    marginBottom: 20,
+    backgroundColor: '#fff',
+    borderRadius: 8,
+  },
+  foodItem: {
+    padding: 10,
+    backgroundColor: '#e1e1e1',
+    borderRadius: 8,
+    marginBottom: 10,
+  },
+  foodText: {
+    fontSize: 16,
+    color: '#333',
+  },
+  selectedFood: {
+    fontSize: 16,
+    color: '#555',
+    marginBottom: 5,
+  },
+  addButton: {
+    backgroundColor: '#6200ea',
+    paddingVertical: 12,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginTop: 20,
+  },
+  scanButton: {
+    backgroundColor: "#03dac6",
+    paddingVertical: 12,
+    borderRadius: 8,
+    alignItems: "center",
+    marginTop: 15,
+  },
+  scanButtonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  addButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+});

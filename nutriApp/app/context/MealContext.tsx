@@ -30,7 +30,7 @@ export const MealProvider: React.FC<{ children: React.ReactNode }> = ({ children
           setMeals(JSON.parse(storedMeals));
         }
       } catch (error) {
-        console.error('Erreur lors du chargement des repas', error);
+        console.error('Erreur lors du chargement des repas');
       }
     };
     loadMeals();
@@ -42,20 +42,20 @@ export const MealProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setMeals(updatedMeals);
       await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(updatedMeals));
     } catch (error) {
-      console.error('Erreur lors de l’ajout du repas', error);
+      console.error('Erreur lors de l’ajout du repas');
     }
   };
 
   const deleteMeal = (id: string) => {
     setMeals((prevMeals) => {
       const updatedMeals = prevMeals.filter((meal) => meal.id !== id);
-      AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(updatedMeals)); // Met à jour le stockage local
+      AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(updatedMeals)); 
       return updatedMeals;
     });
   };
 
   return (
-    <MealContext.Provider value={{ meals, addMeal, deleteMeal }}> {/* Ajout de deleteMeal ici */}
+    <MealContext.Provider value={{ meals, addMeal, deleteMeal }}> 
       {children}
     </MealContext.Provider>
   );
