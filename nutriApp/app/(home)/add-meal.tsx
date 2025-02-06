@@ -4,7 +4,6 @@ import { useMeal } from '../context/MealContext';
 import { Picker } from '@react-native-picker/picker';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import uuid from 'react-native-uuid';
-import DateTimePicker from "@react-native-community/datetimepicker";
 const EDAMAM_APP_ID = '176ba379';
 const EDAMAM_APP_KEY = '23446993d5ad17d69b640410997c86c3';
 
@@ -18,7 +17,7 @@ export default function AddMealScreen() {
   const [searchQuery, setSearchQuery] = useState('');
   const [foodResults, setFoodResults] = useState<string[]>([]);
   const [selectedFoods, setSelectedFoods] = useState<string[]>([]);
-  const [selectedFoodCalories, setSelectedFoodCalories] = useState<number[]>([]); // Pour stocker les calories des aliments sélectionnés
+  const [selectedFoodCalories, setSelectedFoodCalories] = useState<number[]>([]); 
   const [showDatePicker, setShowDatePicker] = useState(false);
   const { barcode } = useLocalSearchParams();
 
@@ -100,13 +99,7 @@ export default function AddMealScreen() {
     addMeal(newMeal);
     Alert.alert('Succès', 'Repas ajouté avec succès !');
     router.replace('/');
-  };
-
-  const onDateChange = (event: any, selectedDate?: Date) => {
-    const currentDate = selectedDate || new Date();
-    setDate(currentDate.toISOString().slice(0, 10));
-    setShowDatePicker(false);
-  };
+  };  
 
   const totalCalories = selectedFoodCalories.reduce((a, b) => a + b, 0); 
 

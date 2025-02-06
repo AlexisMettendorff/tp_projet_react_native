@@ -1,5 +1,5 @@
 import * as React from 'react'
-import {  Text, TextInput, Button, View, StyleSheet, TouchableOpacity  } from 'react-native'
+import {  Text, TextInput, View, StyleSheet, TouchableOpacity  } from 'react-native'
 import { useSignUp } from '@clerk/clerk-expo'
 import { useRouter } from 'expo-router'
 

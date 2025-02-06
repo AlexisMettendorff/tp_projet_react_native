@@ -31,7 +31,6 @@ export default function App() {
     router.push({ pathname: "/add-meal", params: { barcode: data } });
   };
 
-
   return (
     <View style={styles.container}>
       <CameraView

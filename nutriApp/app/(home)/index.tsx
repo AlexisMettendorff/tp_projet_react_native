@@ -3,7 +3,6 @@ import { Link, useRouter } from "expo-router";
 import {
   Text,
   View,
-  Button,
   FlatList,
   TouchableOpacity,
   StyleSheet,
