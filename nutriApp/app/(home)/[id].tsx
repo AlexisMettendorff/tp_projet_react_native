@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Button, Alert } from 'react-native';
+import { View, Text, Button, Alert, ScrollView, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useMeal } from '../context/MealContext';
 
@@ -70,15 +70,15 @@ export default function MealDetailScreen({ route }: any) {
   }
 
   return (
-    <View>
-      <Text style={{ fontSize: 24, fontWeight: 'bold' }}>{meal.name}</Text>
-      <Text>{meal.date} {meal.time}</Text>
+    <ScrollView style={styles.container}>
+      <Text style={styles.mealName}>{meal.name}</Text>
+      <Text style={styles.mealDate}>{meal.date} {meal.time}</Text>
       
-      <Text style={{ fontSize: 18, fontWeight: 'bold' }}>Aliments :</Text>
+      <Text style={styles.sectionTitle}>Aliments :</Text>
       {foodDetails.length > 0 ? (
         foodDetails.map((item, index) => (
-          <View key={index}>
-            <Text>{item.food}</Text>
+          <View key={index} style={styles.foodItem}>
+            <Text style={styles.foodName}>{item.food}</Text>
             <Text>Calories: {item.ENERC_KCAL} kcal</Text>
             <Text>Glucides: {item.CHOCDF} g</Text>
             <Text>Protéines: {item.PROCNT} g</Text>
@@ -86,13 +86,64 @@ export default function MealDetailScreen({ route }: any) {
           </View>
         ))
       ) : (
-        <Text>Aucun aliment trouvé</Text>
+        <Text style={styles.text}>Aucun aliment trouvé</Text>
       )}
 
-      <Text style={{ fontSize: 18, fontWeight: 'bold' }}>Total de calories du repas : {totalCalories} kcal</Text>
+      <Text style={styles.totalCalories}>Total de calories du repas : {totalCalories} kcal</Text>
 
-      <Button title="Supprimer le repas" onPress={handleDeleteMeal} />
-      <Button title="Retour" onPress={() => router.push('/')} />
-    </View>
+      <View style={styles.buttons}>
+        <Button title="Supprimer le repas" color="#e74c3c" onPress={handleDeleteMeal} />
+        <Button title="Retour" onPress={() => router.push('/')} />
+      </View>
+    </ScrollView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    padding: 20,
+    backgroundColor: '#f7f7f7',
+    flex: 1,
+  },
+  mealName: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: '#2c3e50',
+    marginBottom: 10,
+  },
+  mealDate: {
+    fontSize: 16,
+    color: '#7f8c8d',
+    marginBottom: 20,
+  },
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#2980b9',
+    marginBottom: 10,
+  },
+  foodItem: {
+    backgroundColor: '#ecf0f1',
+    padding: 15,
+    marginVertical: 5,
+    borderRadius: 8,
+  },
+  foodName: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#34495e',
+  },
+  totalCalories: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#e67e22',
+    marginTop: 20,
+  },
+  buttons: {
+    marginTop: 30,
+  },
+  text: {
+    fontSize: 16,
+    color: '#7f8c8d',
+  },
+});
