@@ -19,7 +19,6 @@ export default function AddMealScreen() {
   const [foodResults, setFoodResults] = useState<string[]>([]);
   const [selectedFoods, setSelectedFoods] = useState<string[]>([]);
 
-  // Fonction de recherche d'aliments via Edamam
   const searchFood = async () => {
     if (!searchQuery) return;
 
@@ -34,11 +33,10 @@ export default function AddMealScreen() {
     }
   };
 
-  // Fonction pour ajouter un aliment sélectionné
   const addFood = (food: string) => {
     setSelectedFoods([...selectedFoods, food]);
-    setFoodResults([]); // Efface les résultats après sélection
-    setSearchQuery(''); // Réinitialise le champ de recherche
+    setFoodResults([]); 
+    setSearchQuery(''); 
   };
 
   const handleAddMeal = () => {
@@ -81,7 +79,6 @@ export default function AddMealScreen() {
       <TextInput value={searchQuery} onChangeText={setSearchQuery} placeholder="Ex: Pomme, Poulet, Riz" />
       <Button title="Rechercher" onPress={searchFood} />
 
-      {/* Affichage des résultats de recherche */}
       <FlatList
         data={foodResults}
         keyExtractor={(item) => item}
@@ -92,7 +89,6 @@ export default function AddMealScreen() {
         )}
       />
 
-      {/* Liste des aliments sélectionnés */}
       <Text>Aliments sélectionnés :</Text>
       {selectedFoods.map((food, index) => (
         <Text key={index}>{food}</Text>

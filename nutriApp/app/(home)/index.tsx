@@ -1,6 +1,6 @@
 import { SignedIn, SignedOut } from '@clerk/clerk-expo';
 import { Link, useRouter } from 'expo-router';
-import { Text, View, Button, FlatList } from 'react-native';
+import { Text, View, Button, FlatList, TouchableOpacity  } from 'react-native';
 import { useMeal } from '../context/MealContext';
 
 export default function Page() {
@@ -22,12 +22,16 @@ export default function Page() {
               <View>
                 <Text>{item.name} - {item.date} {item.time}</Text>
                 <Text>Aliments: {item.foods.join(', ')}</Text>
+                <TouchableOpacity onPress={() => router.push(`/${item.id}`)}>
+                  <Text style={{ color: 'blue', marginTop: 5 }}>Voir les détails</Text>
+                </TouchableOpacity>
               </View>
             )}
           />
         )}
 
         <Button title="Ajouter un repas" onPress={() => router.push('/add-meal')} />
+        <Button title="Scanner un code-barre" onPress={() => router.push('/camera')} />
         <Button title="Mon profil" onPress={() => router.push('/profile')} />
       </SignedIn>
 

@@ -12,6 +12,7 @@ export type Meal = {
 type MealContextType = {
   meals: Meal[];
   addMeal: (meal: Meal) => void;
+  deleteMeal: (id: string) => void; 
 };
 
 const STORAGE_KEY = 'meals_data';
@@ -45,8 +46,16 @@ export const MealProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  const deleteMeal = (id: string) => {
+    setMeals((prevMeals) => {
+      const updatedMeals = prevMeals.filter((meal) => meal.id !== id);
+      AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(updatedMeals)); // Met à jour le stockage local
+      return updatedMeals;
+    });
+  };
+
   return (
-    <MealContext.Provider value={{ meals, addMeal }}>
+    <MealContext.Provider value={{ meals, addMeal, deleteMeal }}> {/* Ajout de deleteMeal ici */}
       {children}
     </MealContext.Provider>
   );
