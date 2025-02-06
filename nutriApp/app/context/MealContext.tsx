@@ -7,6 +7,7 @@ export type Meal = {
   date: string;
   time: string;
   foods: string[];
+  calories: number;
 };
 
 type MealContextType = {

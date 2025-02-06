@@ -34,6 +34,9 @@ export default function Page() {
                 <Text style={styles.mealFoods}>
                   Aliments: {item.foods.join(", ")}
                 </Text>
+                <Text style={styles.mealFoods}>
+                  Calories: {item.calories} Kcal
+                </Text>
                 <TouchableOpacity onPress={() => router.push(`/${item.id}`)}>
                   <Text style={styles.viewDetailsText}>Voir les détails</Text>
                 </TouchableOpacity>

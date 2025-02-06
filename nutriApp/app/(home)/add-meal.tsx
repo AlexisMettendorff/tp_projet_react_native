@@ -1,8 +1,8 @@
-import React, { useState,useEffect  } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, Button, Alert, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
 import { useMeal } from '../context/MealContext';
 import { Picker } from '@react-native-picker/picker';
-import { useRouter, useLocalSearchParams  } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import uuid from 'react-native-uuid';
 import DateTimePicker from "@react-native-community/datetimepicker";
 const EDAMAM_APP_ID = '176ba379';
@@ -18,6 +18,7 @@ export default function AddMealScreen() {
   const [searchQuery, setSearchQuery] = useState('');
   const [foodResults, setFoodResults] = useState<string[]>([]);
   const [selectedFoods, setSelectedFoods] = useState<string[]>([]);
+  const [selectedFoodCalories, setSelectedFoodCalories] = useState<number[]>([]); // Pour stocker les calories des aliments sélectionnés
   const [showDatePicker, setShowDatePicker] = useState(false);
   const { barcode } = useLocalSearchParams();
 
@@ -59,10 +60,26 @@ export default function AddMealScreen() {
     }
   };
 
+  const fetchFoodCalories = async (food: string) => {
+    try {
+      const response = await fetch(
+        `https://api.edamam.com/api/food-database/v2/parser?ingr=${food}&app_id=${EDAMAM_APP_ID}&app_key=${EDAMAM_APP_KEY}`
+      );
+      const data = await response.json();
+      const calories = data.hints[0]?.food.nutrients?.ENERC_KCAL;
+      if (calories) {
+        setSelectedFoodCalories((prev) => [...prev, calories]);
+      }
+    } catch (error) {
+      console.error("Erreur lors de la récupération des calories de l'aliment:", error);
+    }
+  };
+
   const addFood = (food: string) => {
     setSelectedFoods([...selectedFoods, food]);
-    setFoodResults([]); 
-    setSearchQuery(''); 
+    fetchFoodCalories(food); 
+    setFoodResults([]);
+    setSearchQuery('');
   };
 
   const handleAddMeal = () => {
@@ -77,6 +94,7 @@ export default function AddMealScreen() {
       date,
       time,
       foods: selectedFoods,
+      calories: selectedFoodCalories.reduce((a, b) => a + b, 0), 
     };
 
     addMeal(newMeal);
@@ -90,7 +108,7 @@ export default function AddMealScreen() {
     setShowDatePicker(false);
   };
 
-
+  const totalCalories = selectedFoodCalories.reduce((a, b) => a + b, 0); 
 
   return (
     <View style={styles.container}>
@@ -147,16 +165,18 @@ export default function AddMealScreen() {
       )}
 
       <TouchableOpacity
-                style={styles.scanButton}
-                onPress={() => router.push("/camera")}
-              >
-                <Text style={styles.scanButtonText}>Scanner un code-barre</Text>
-              </TouchableOpacity>
+        style={styles.scanButton}
+        onPress={() => router.push("/camera")}
+      >
+        <Text style={styles.scanButtonText}>Scanner un code-barre</Text>
+      </TouchableOpacity>
 
       <Text style={styles.label}>Aliments sélectionnés :</Text>
       {selectedFoods.map((food, index) => (
         <Text key={index} style={styles.selectedFood}>{food}</Text>
       ))}
+
+      <Text style={styles.label}>Total des calories : {totalCalories} kcal</Text>
 
       <TouchableOpacity style={styles.addButton} onPress={handleAddMeal}>
         <Text style={styles.addButtonText}>Ajouter le repas</Text>
