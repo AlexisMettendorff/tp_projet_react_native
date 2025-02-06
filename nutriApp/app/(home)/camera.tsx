@@ -10,6 +10,7 @@ import { useRouter } from 'expo-router';
 export default function App() {
   const [scanned, setScanned] = useState(false);
   const [permission, requestPermission] = useCameraPermissions();
+  const router = useRouter();
 
   useEffect(() => {
     if (!permission?.granted && permission?.canAskAgain) {
@@ -25,11 +26,11 @@ export default function App() {
     return <Text>No access to camera</Text>;
   }
 
-  const handleBarcodeScanned = ({ type, data }: BarcodeScanningResult) => {
+  const handleBarcodeScanned = ({ data }: BarcodeScanningResult) => {
     setScanned(true);
-    console.log(`Scanned barcode type: ${type}, data: ${data}`);
-    alert(`Bar code with type ${type} and data ${data} has been scanned!`);
+    router.push({ pathname: "/add-meal", params: { barcode: data } });
   };
+
 
   return (
     <View style={styles.container}>

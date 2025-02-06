@@ -68,3 +68,6 @@ export const useMeal = () => {
   }
   return context;
 };
+
+export default MealProvider;
+

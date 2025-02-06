@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect  } from 'react';
 import { View, Text, TextInput, Button, Alert, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
 import { useMeal } from '../context/MealContext';
 import { Picker } from '@react-native-picker/picker';
-import { useRouter } from 'expo-router';
-import { v4 as uuidv4 } from 'uuid';
+import { useRouter, useLocalSearchParams  } from 'expo-router';
+import uuid from 'react-native-uuid';
 import DateTimePicker from "@react-native-community/datetimepicker";
 const EDAMAM_APP_ID = '176ba379';
 const EDAMAM_APP_KEY = '23446993d5ad17d69b640410997c86c3';
@@ -19,6 +19,13 @@ export default function AddMealScreen() {
   const [foodResults, setFoodResults] = useState<string[]>([]);
   const [selectedFoods, setSelectedFoods] = useState<string[]>([]);
   const [showDatePicker, setShowDatePicker] = useState(false);
+  const { barcode } = useLocalSearchParams();
+
+  useEffect(() => {
+    if (barcode && typeof barcode === "string") {
+      fetchFoodByBarcode(barcode);
+    }
+  }, [barcode]);
 
   const searchFood = async () => {
     if (!searchQuery) return;
@@ -31,6 +38,24 @@ export default function AddMealScreen() {
       setFoodResults(data.hints.map((item: any) => item.food.label));
     } catch (error) {
       console.error('Erreur lors de la récupération des aliments:', error);
+    }
+  };
+
+  const fetchFoodByBarcode = async (barcode: string) => {
+    try {
+      const response = await fetch(
+        `https://api.edamam.com/api/food-database/v2/parser?upc=${barcode}&app_id=${EDAMAM_APP_ID}&app_key=${EDAMAM_APP_KEY}`
+      );
+      const data = await response.json();
+
+      if (data.hints.length > 0) {
+        const foodLabel = data.hints[0].food.label;
+        setSelectedFoods([...selectedFoods, foodLabel]);
+      } else {
+        Alert.alert("Aucun aliment trouvé", "Le code-barres n'a pas été reconnu.");
+      }
+    } catch (error) {
+      console.error("Erreur lors de la recherche du code-barres:", error);
     }
   };
 
@@ -47,7 +72,7 @@ export default function AddMealScreen() {
     }
 
     const newMeal = {
-      id: uuidv4(),
+      id: uuid.v4(),
       name,
       date,
       time,

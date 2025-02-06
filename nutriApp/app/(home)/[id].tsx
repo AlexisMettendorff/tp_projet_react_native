@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, Button, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useMeal } from '../context/MealContext';
-import { v4 as uuidv4 } from 'uuid'; 
 
 const fetchFoodDetails = async (foodName: string) => {
   const appId = '176ba379'; 
